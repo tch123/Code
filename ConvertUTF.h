@@ -51,6 +51,8 @@ typedef unsigned char Boolean; /* 0 or 1 */
         const UTF32 **sourceStart, const UTF32 *sourceEnd,
         UTF16 **targetStart, UTF16 *targetEnd, Util::ConversionFlags flags);
 
+	Boolean isLegalUTF8Sequence( const UTF8 *source, const UTF8 *sourceEnd );
+
  
 };
 

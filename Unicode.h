@@ -1,4 +1,28 @@
 #include "Config.h"
+#include "ConvertUTF.h"
+
+namespace Util
+{
+	typedef enum
+	{
+		strictConversion = 0,
+		lenientConversion
+	} ConversionFlags;
+
+	std::string wstringToString(const std::wstring &, ConversionFlags flags= lenientConversion);
+	std::wstring stringToWstring(const std::string &, ConversionFlags flags= lenientConversion);
+
+	typedef unsigned char Byte;
+
+
+
+	enum ConversionError
+	{
+		partialCharacter,
+		badEncoding
+	};
+
+}
 
 namespace UtilInternal
 {
@@ -28,28 +52,5 @@ namespace UtilInternal
                             std::wstring &target, Util::ConversionFlags flags);
 
 
-
-}
-
-namespace Util
-{
-    typedef enum
-    {
-        strictConversion = 0,
-        lenientConversion
-    } ConversionFlags;
-
-    std::string wstringToString(const std::wstring &, ConversionFlags = lenientConversion);
-    std::wstring stringToWstring(const std::string &, ConversionFlags = lenientConversion);
-
-    typedef unsigned char Byte;
-
-    bool isLegalUTF8Sequence(const Byte *source, const Byte *end);
-
-    enum ConversionError
-    {
-        partialCharacter,
-        badEncoding
-    };
 
 }
