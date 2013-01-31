@@ -1,9 +1,8 @@
-#ifndef ConvertUTF_h__
-#define ConvertUTF_h__
-#include "Unicode.h"
+#pragma once
 
-namespace UtilInternal
+namespace Util
 {
+
 
 
     /* ---------------------------------------------------------------------
@@ -14,10 +13,12 @@ namespace UtilInternal
         bit mask & shift operations.
     ------------------------------------------------------------------------ */
 
-typedef unsigned long UTF32; /* at least 32 bits */
-typedef unsigned short UTF16; /* at least 16 bits */
-typedef unsigned char UTF8; /* typically 8 bits */
-typedef unsigned char Boolean; /* 0 or 1 */
+    typedef unsigned long UTF32; /* at least 32 bits */
+    typedef unsigned short UTF16; /* at least 16 bits */
+    typedef unsigned char UTF8; /* typically 8 bits */
+    typedef unsigned char Boolean; /* 0 or 1 */
+	typedef unsigned char Byte;
+
 
     /* Some fundamental constants */
 #define UNI_REPLACEMENT_CHAR (UTF32)0x0000FFFD
@@ -26,34 +27,57 @@ typedef unsigned char Boolean; /* 0 or 1 */
 #define UNI_MAX_UTF32 (UTF32)0x7FFFFFFF
 #define UNI_MAX_LEGAL_UTF32 (UTF32)0x0010FFFF
 
+	enum ConversionError
+	{
+		partialCharacter,
+		badEncoding
+	};
 
-    ConversionResult ConvertUTF8toUTF16 (
+	enum ConversionResult
+	{
+		/* conversion successful */
+		conversionOK,
+		/* partial character in source, but hit end */
+		sourceExhausted,
+		/* insuff. room in target for conversion */
+		targetExhausted,
+		/* source sequence is illegal/malformed */
+		sourceIllegal
+	} ;
+
+	enum ConversionFlags
+	{
+		strictConversion ,
+		lenientConversion
+	};
+
+
+    ConversionResult ConvertUTF8toUTF16(
         const UTF8 **sourceStart, const UTF8 *sourceEnd,
-		UTF16 **targetStart, UTF16 *targetEnd, Util::ConversionFlags flags);
+        UTF16 **targetStart, UTF16 *targetEnd, ConversionFlags flags );
 
-    ConversionResult ConvertUTF16toUTF8 (
+    ConversionResult ConvertUTF16toUTF8(
         const UTF16 **sourceStart, const UTF16 *sourceEnd,
-        UTF8 **targetStart, UTF8 *targetEnd, Util::ConversionFlags flags);
+        UTF8 **targetStart, UTF8 *targetEnd, ConversionFlags flags );
 
-    ConversionResult ConvertUTF8toUTF32 (
+    ConversionResult ConvertUTF8toUTF32(
         const UTF8 **sourceStart, const UTF8 *sourceEnd,
-        UTF32 **targetStart, UTF32 *targetEnd, Util::ConversionFlags flags);
+        UTF32 **targetStart, UTF32 *targetEnd, ConversionFlags flags );
 
-    ConversionResult ConvertUTF32toUTF8 (
+    ConversionResult ConvertUTF32toUTF8(
         const UTF32 **sourceStart, const UTF32 *sourceEnd,
-        UTF8 **targetStart, UTF8 *targetEnd, Util::ConversionFlags flags);
+        UTF8 **targetStart, UTF8 *targetEnd, ConversionFlags flags );
 
-    ConversionResult ConvertUTF16toUTF32 (
+    ConversionResult ConvertUTF16toUTF32(
         const UTF16 **sourceStart, const UTF16 *sourceEnd,
-        UTF32 **targetStart, UTF32 *targetEnd, Util::ConversionFlags flags);
+        UTF32 **targetStart, UTF32 *targetEnd, ConversionFlags flags );
 
-    ConversionResult ConvertUTF32toUTF16 (
+    ConversionResult ConvertUTF32toUTF16(
         const UTF32 **sourceStart, const UTF32 *sourceEnd,
-        UTF16 **targetStart, UTF16 *targetEnd, Util::ConversionFlags flags);
+        UTF16 **targetStart, UTF16 *targetEnd, ConversionFlags flags );
 
-	Boolean isLegalUTF8Sequence( const UTF8 *source, const UTF8 *sourceEnd );
+    Boolean isLegalUTF8Sequence( const UTF8 *source, const UTF8 *sourceEnd );
 
- 
+
 };
 
-#endif // ConvertUTF_h__

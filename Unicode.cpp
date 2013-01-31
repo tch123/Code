@@ -1,6 +1,6 @@
 #include "Unicode.h"
-#include "ConvertUTF.h"
 
+using namespace Util;
 
 
 namespace
@@ -8,21 +8,21 @@ namespace
     template<size_t wcharSize>
     struct WStringHelper
     {
-        static UtilInternal::ConversionResult toUTF8(const wchar_t *&sourceStart, const wchar_t *sourceEnd, Util::Byte *&targetStart, Util::Byte *targetEnd, Util::ConversionFlags flags);
-        static UtilInternal::ConversionResult fromUTF8(const Util::Byte *&sourceStart, const Util::Byte *sourceEnd, wchar_t *&targetStart, wchar_t *targetEnd, Util::ConversionFlags flags);
+        static ConversionResult toUTF8(const wchar_t *&sourceStart, const wchar_t *sourceEnd, Byte *&targetStart, Byte *targetEnd, ConversionFlags flags);
+        static ConversionResult fromUTF8(const Byte *&sourceStart, const Byte *sourceEnd, wchar_t *&targetStart, wchar_t *targetEnd, ConversionFlags flags);
 
     };
     template<>
     struct WStringHelper<2>
     {
-        static UtilInternal::ConversionResult toUTF8(const wchar_t *&sourceStart, const wchar_t *sourceEnd, Util::Byte *&targetStart, Util::Byte *targetEnd, Util::ConversionFlags flags)
+        static ConversionResult toUTF8(const wchar_t *&sourceStart, const wchar_t *sourceEnd, Byte *&targetStart, Byte *targetEnd, ConversionFlags flags)
         {
-            return UtilInternal::ConvertUTF16toUTF8(reinterpret_cast<UtilInternal::UTF16 **>(&sourceStart), reinterpret_cast<UtilInternal::UTF16 *>(sourceEnd), &targetStart, targetEnd, flags);
+            return ConvertUTF16toUTF8(reinterpret_cast<const UTF16 **>(&sourceStart), reinterpret_cast<const UTF16 *>(sourceEnd), &targetStart, targetEnd, flags);
 
         }
-        static UtilInternal::ConversionResult fromUTF8(const Util::Byte *&sourceStart, const Util::Byte *sourceEnd, wchar_t *&targetStart, wchar_t *targetEnd, Util::ConversionFlags flags)
+        static ConversionResult fromUTF8(const Byte *&sourceStart, const Byte *sourceEnd, wchar_t *&targetStart, wchar_t *targetEnd, ConversionFlags flags)
         {
-            return UtilInternal::ConvertUTF8toUTF16(&sourceStart, sourceEnd, reinterpret_cast<UtilInternal::UTF16 **>(&targetStart), reinterpret_cast<UTF16 *>(targetEnd), flags);
+            return ConvertUTF8toUTF16(&sourceStart, sourceEnd, reinterpret_cast<UTF16 **>(&targetStart), reinterpret_cast<UTF16 *>(targetEnd), flags);
         }
 
     };
@@ -30,14 +30,14 @@ namespace
     template<>
     struct WStringHelper<4>
     {
-        static UtilInternal::ConversionResult toUTF8(const wchar_t *&sourceStart, const wchar_t *sourceEnd, Util::Byte *&targetStart, Util::Byte *targetEnd, Util::ConversionFlags flags)
+        static ConversionResult toUTF8(const wchar_t *&sourceStart, const wchar_t *sourceEnd, Byte *&targetStart, Byte *targetEnd, ConversionFlags flags)
         {
-            return UtilInternal::ConvertUTF32toUTF8(reinterpret_cast<UtilInternal::UTF32 **>(&sourceStart), reinterpret_cast<UtilInternal::UTF32 *>(sourceEnd), &targetStart, targetEnd, flags);
+            return ConvertUTF32toUTF8(reinterpret_cast<const UTF32 **>(&sourceStart), reinterpret_cast<const UTF32 *>(sourceEnd), &targetStart, targetEnd, flags);
 
         }
-               static UtilInternal::ConversionResult fromUTF8(const Util::Byte *&sourceStart, const Util::Byte *sourceEnd, wchar_t *&targetStart, wchar_t *targetEnd, Util::ConversionFlags flags)
+               static ConversionResult fromUTF8(const Byte *&sourceStart, const Byte *sourceEnd, wchar_t *&targetStart, wchar_t *targetEnd, ConversionFlags flags)
         {
-            return UtilInternal::ConvertUTF8toUTF32(&sourceStart, sourceEnd, reinterpret_cast<UtilInternal::UTF32 **>(&targetStart), reinterpret_cast<UtilInternal::UTF32 *>(targetEnd), flags);
+            return ConvertUTF8toUTF32(&sourceStart, sourceEnd, reinterpret_cast<UTF32 **>(&targetStart), reinterpret_cast<UTF32 *>(targetEnd), flags);
 
         }
 
@@ -46,24 +46,24 @@ namespace
 
 }
 
-namespace UtilInternal
+
+
+namespace Util
 {
-
-
-    ConversionResult convertUTFWstringToUTF8( const wchar_t *&sourceStart, const wchar_t *sourceEnd, Util::Byte *&targetStart, Util::Byte *targetEnd, Util::ConversionFlags flags )
+    ConversionResult convertUTFWstringToUTF8( const wchar_t *&sourceStart, const wchar_t *sourceEnd, Byte *&targetStart, Byte *targetEnd, ConversionFlags flags )
     {
         
 		return WStringHelper<sizeof(wchar_t)>::toUTF8(sourceStart,sourceEnd,targetStart,targetEnd,flags);
 
     }
 
-        ConversionResult convertUTF8ToUTFWstring( const Util::Byte *&sourceStart, const Util::Byte *sourceEnd, wchar_t *&targetStart, wchar_t *targetEnd, Util::ConversionFlags flags )
+        ConversionResult convertUTF8ToUTFWstring( const Byte *&sourceStart, const Byte *sourceEnd, wchar_t *&targetStart, wchar_t *targetEnd, ConversionFlags flags )
     {
 		return WStringHelper<sizeof(wchar_t)>::fromUTF8(sourceStart,sourceEnd,targetStart,targetEnd,flags);
 
     }
 
-    ConversionResult convertUTF8ToUTFWstring( const Util::Byte *&sourceStart, const Util::Byte *sourceEnd, std::wstring &target, Util::ConversionFlags flags )
+    ConversionResult convertUTF8ToUTFWstring( const Byte *&sourceStart, const Byte *sourceEnd, std::wstring &target, ConversionFlags flags )
     {
 		size_t size = static_cast<size_t>(sourceEnd - sourceStart);
 		wchar_t* outBuf = new wchar_t[size];
@@ -100,9 +100,9 @@ namespace Util
 
 		const wchar_t* sourceStart = wstr.data();
 
-		UtilInternal::ConversionResult cr = UtilInternal::convertUTFWstringToUTF8(sourceStart,sourceStart+wstr.size(),targetStart,targetEnd,flags);
+		ConversionResult cr = convertUTFWstringToUTF8(sourceStart,sourceStart+wstr.size(),targetStart,targetEnd,flags);
 
-		if (cr != UtilInternal::conversionOK)
+		if (cr != conversionOK)
 		{
 			delete [] outBuf;
 			//exception handle here!!!
@@ -122,9 +122,9 @@ namespace Util
 		const Byte* sourceStart = reinterpret_cast<const Byte*>(str.data());
 
 
-		UtilInternal::ConversionResult cr = UtilInternal::convertUTF8ToUTFWstring(sourceStart,sourceStart+str.size(),result,flags);
+		ConversionResult cr = convertUTF8ToUTFWstring(sourceStart,sourceStart+str.size(),result,flags);
 
-		if (cr != UtilInternal::conversionOK)
+		if (cr != conversionOK)
 		{
 			//exception handle here
 		}
@@ -132,12 +132,5 @@ namespace Util
 		return result;
 
 	}
-
-
-
 	
-
-
-
-
 }
